@@ -378,9 +378,11 @@ int main (int argc, const char **argv) {
 	win_init(&windows[0], "Log", 20, 0, BOTTOM, 0);
 	win_init(&windows[1], "Sidebar", 0, 30, 0, RIGHT);
 	win_init(&windows[2], "Main", 0, 0, 0, 0);
-	win_init(&windows[3], "Dialogue", 3, 30, 0, 0);
+	win_init(&windows[3], "Dialogue", 5, 30, 0, 0);
 
-	text_push(&windows[3].text, "Press q to quit, s/l to show windows and S/L to hide windows");
+	text_push(&windows[3].text, "Press s/l to show windows and S/L to hide windows");
+	text_push(&windows[3].text, "Press tab or shift+tab to change focus");
+	text_push(&windows[3].text, "Press q to quit");
 	win_fit_text(&windows[3]);
 
 	// Sidebar takes remaining rows after Log
