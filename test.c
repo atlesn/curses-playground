@@ -271,9 +271,7 @@ void win_update_inside (struct win *win) {
 	wrefresh(win->win);
 }
 
-void win_draw_border (struct win *win, int focus) {
-	int idx = 0;
-
+int win_draw_border (struct win *win, int focus) {
 	cchar_t *v, *h, *tl, *tr, *br, *bl;
 
 	if (focus) {
@@ -293,6 +291,10 @@ void win_draw_border (struct win *win, int focus) {
 		bl = WACS_LLCORNER;
 	}
 
+	// Just make sure window fits
+	if (box(win->win, 0, 0) != OK)
+		return ERR;
+
 	for (int i = 1; i < win->rows - 1; i++) {
 		mvwadd_wch(win->win, i, 0, v);
 		mvwadd_wch(win->win, i, win->cols - 1, v);
@@ -301,10 +303,13 @@ void win_draw_border (struct win *win, int focus) {
 		mvwadd_wch(win->win, 0, i, h);
 		mvwadd_wch(win->win, win->rows - 1, i, h);
 	}
+
 	mvwadd_wch(win->win, 0, 0, tl);
 	mvwadd_wch(win->win, 0, win->cols - 1, tr);
 	mvwadd_wch(win->win, win->rows - 1, win->cols - 1, br);
 	mvwadd_wch(win->win, win->rows - 1, 0, bl);
+
+	return OK;
 }
 
 void win_draw (struct win *win, int focus) {
@@ -313,9 +318,8 @@ void win_draw (struct win *win, int focus) {
 
 	win_reinit(win);
 
-	win_draw_border(win, focus);
-
-	wrefresh(win->win);
+	if (win_draw_border(win, focus) != OK)
+		return;
 
 	if (focus)
 		wattron(win->win, A_BOLD);
@@ -451,6 +455,10 @@ int main (int argc, const char **argv) {
 				default:
 					break;
 			}
+		}
+
+		if (!focus_change && !windows[focus].showing) {
+			focus_change = 1;
 		}
 
 		if (focus_change) {
