@@ -1,4 +1,4 @@
 test:
-	gcc -lncurses -o test test.c -g
+	gcc -lncursesw -o test test.c win.c text.c -g
 clean:
 	rm test
