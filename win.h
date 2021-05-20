@@ -47,6 +47,11 @@ void win_show (struct win *win);
 void win_hide (struct win *win);
 void win_init (struct win *win, const char *title, int rows, int cols, int y, int x);
 void win_text_push (struct win *win, const char *text);
-void win_run ();
+void win_run (
+		struct win *wins,
+		const size_t count,
+		void (*init_callback)(void),
+		void (*key_callback)(int *do_quit, int *focus_change, int *need_update, int key1, int key2, int key3)
+);
 
 #endif /* WIN_H */

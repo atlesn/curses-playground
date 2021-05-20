@@ -25,7 +25,6 @@ void win_set_post_update_notify_action (
 	target->post_update_notify_actions_col = col_action;
 }
 
-
 void win_set_post_update_action (
 		struct win *subject,
 		int actions
@@ -33,7 +32,7 @@ void win_set_post_update_action (
 	subject->post_update_actions = actions;
 }
 
-void win_process_post_update_notify_action (
+static void win_process_post_update_notify_action (
 		struct win *subject,
 		const struct win *source
 ) {
@@ -71,14 +70,14 @@ void win_process_post_update_notify_action (
 	}
 }
 
-void win_cleanup (struct win *win) {
+static void win_cleanup (struct win *win) {
 	if (win->win)
 		delwin(win->win);
 	win->win = NULL;
 	text_cleanup(&win->text);
 }
 
-void win_reinit (struct win *win) {
+static void win_reinit (struct win *win) {
 	if (win->win)
 		delwin(win->win);
 	win->win = newwin (
@@ -104,7 +103,7 @@ void win_hide (struct win *win) {
 	win->showing = 0;
 }
 
-int win_yx_resolve_command (int command, int a, int b, int c) {
+static int win_yx_resolve_command (int command, int a, int b, int c) {
 	int result = command;
 
 	switch (command) {
@@ -125,7 +124,7 @@ int win_yx_resolve_command (int command, int a, int b, int c) {
 	return result;
 }
 
-int win_rowscols_resolve_command (int command, int a, int b) {
+static int win_rowscols_resolve_command (int command, int a, int b) {
 	int result = command;
 
 	switch (command) {
@@ -143,7 +142,7 @@ int win_rowscols_resolve_command (int command, int a, int b) {
 	return result;
 }
 
-void win_update_yx (struct win *win) {
+static void win_update_yx (struct win *win) {
 	win->rows = win_rowscols_resolve_command (win->rows_command, LINES, win->rows);
 	win->cols = win_rowscols_resolve_command (win->cols_command, COLS, win->cols);
 
@@ -166,14 +165,14 @@ void win_update_yx (struct win *win) {
 		win_process_post_update_notify_action(win->win_post_update_notify_subject, win);
 }
 
-void win_update_inside_text_print_callback (const char *text, const int row, void *callback_arg) {
+static void win_update_inside_text_print_callback (const char *text, const int row, void *callback_arg) {
 	struct win *win = callback_arg;
 
 	wmove(win->win, row + 1, 2);
 	wprintw(win->win, "%s", text);
 }
 
-void win_update_inside (struct win *win) {
+static void win_update_inside (struct win *win) {
 	if (!win->showing || win->rows < 3)
 		return;
 
@@ -188,7 +187,7 @@ void win_text_push (struct win *win, const char *text) {
 		win_update_inside(win);
 }
 
-int win_draw_border (struct win *win, int focus) {
+static int win_draw_border (struct win *win, int focus) {
 	cchar_t *v, *h, *tl, *tr, *br, *bl;
 
 	if (focus) {
@@ -229,7 +228,7 @@ int win_draw_border (struct win *win, int focus) {
 	return OK;
 }
 
-void win_draw (struct win *win, int focus) {
+static void win_draw (struct win *win, int focus) {
 	if (!win->showing)
 		return;
 
@@ -260,7 +259,7 @@ void win_init (struct win *win, const char *title, int rows, int cols, int y, in
 	win_update_yx(win);
 }
 
-void win_update_many (struct win *wins, size_t count, int focus) {
+static void win_update_many (struct win *wins, size_t count, int focus) {
 	endwin();
 	refresh();
 
@@ -273,7 +272,7 @@ void win_update_many (struct win *wins, size_t count, int focus) {
 	}
 }
 
-void win_cleanup_many (struct win *wins, size_t count) {
+static void win_cleanup_many (struct win *wins, size_t count) {
 	for (int i = 0; i < count; i++) {
 		win_cleanup(&wins[i]);
 	}
